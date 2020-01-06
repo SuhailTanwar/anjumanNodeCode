@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    grandFatherName: {
+        type: String,
+        trim: true
+    },
     lastName: {
         type: String,
         required: true,
@@ -46,7 +50,18 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-
+    dob: {
+        type: String,
+        trim: true
+    },
+    education: {
+        type: String,
+        trim: true
+    },
+    profession: {
+        type: String,
+        trim: true
+    },
     password: {
         type: String,
         required: true,
@@ -73,6 +88,14 @@ userSchema.methods.generateAuthToken = async function () {
     return token;
 }
 
+
+userSchema.methods.toJSON = function () {
+    user = this;
+    userObject = user.toObject();
+    delete userObject.tokens;
+    delete userObject.password;
+    return userObject;
+}
 userSchema.statics.findByCredentail = async (email, password) => {
     console.log("At login by credentails")
     const user = await User.findOne({ email: email });
