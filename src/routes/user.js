@@ -51,7 +51,10 @@ router.post('/qsServices/user/logoutAll', checkAuth, async (req, resp) => {
     try {
         req.user.tokens = [];
         const user = await req.user.save();
-        resp.status(200).send(user)
+        const headerDto = {
+            responseCode: 200
+        }
+        resp.status(200).send({ headerDto })
     } catch (e) {
         resp.status(404).send("ERROR")
     }
@@ -65,14 +68,14 @@ router.get('/qsServices/user/me', checkAuth, async (req, resp) => {
     }
 })
 
-router.patch('/qsServices/user/updateMe', checkAuth, async (req, resp) => {
+router.post('/qsServices/user/updateMe', checkAuth, async (req, resp) => {
     const updates = Object.keys(req.body);
     console.log(updates)
-    const UpdateColumns = ['firstName', 'lastName', 'password', 'fartherName', 'mobileNo'];
+    const UpdateColumns = ['firstName', 'fatherName', 'lastName', 'grandFatherName', 'dob', 'gender', 'mobile', 'email'];
     const updatesPermission = updates.every((update) => UpdateColumns.includes(update))
     console.log("updatesPermission", updatesPermission);
     if (!updatesPermission) {
-        return resp.status(404).send("Invalid Updates!!")
+        return resp.status(401).send({ message: "invalid_updte" })
     }
 
     try {
@@ -82,7 +85,7 @@ router.patch('/qsServices/user/updateMe', checkAuth, async (req, resp) => {
         })
 
         await user.save();
-        resp.status(200).send(user);
+        resp.status(200).send({ message: "updated", statusCode:200 });
     } catch (e) {
         resp.status(500).send();
     }
